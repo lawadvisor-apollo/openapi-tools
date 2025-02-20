@@ -1,28 +1,24 @@
 defmodule OpenapiTools.ErrorBuilder do
   alias OpenApiSpex.Schema
 
-  def error do
+  def error(opts \\ %{}) do
     %{
       type: :object,
       properties: %{
-        errors: %Schema{
-          type: :object,
-          properties: %{
-            details: %Schema{type: :string}
-          }
-        }
+        errors: Map.merge(%Schema{type: :object}, opts)
       }
     }
   end
 end
 
 defmodule OpenapiTools.Errors do
+  import OpenapiTools.SchemaBuilder
   import OpenapiTools.ErrorBuilder
   require OpenApiSpex
   alias OpenApiSpex.Operation
 
   defmodule UnauthorizedError do
-    OpenApiSpex.schema(error())
+    OpenApiSpex.schema(error(%{properties: %{detail: schema(:string)}}))
   end
 
   def unauthorized do
@@ -30,7 +26,7 @@ defmodule OpenapiTools.Errors do
   end
 
   defmodule ForbiddenError do
-    OpenApiSpex.schema(error())
+    OpenApiSpex.schema(error(%{properties: %{detail: schema(:string)}}))
   end
 
   def forbidden do
@@ -38,7 +34,7 @@ defmodule OpenapiTools.Errors do
   end
 
   defmodule NotFoundError do
-    OpenApiSpex.schema(error())
+    OpenApiSpex.schema(error(%{properties: %{detail: schema(:string)}}))
   end
 
   def not_found do
@@ -54,7 +50,7 @@ defmodule OpenapiTools.Errors do
   end
 
   defmodule InternalServerError do
-    OpenApiSpex.schema(error())
+    OpenApiSpex.schema(error(%{properties: %{detail: schema(:string)}}))
   end
 
   def internal_server_error do
