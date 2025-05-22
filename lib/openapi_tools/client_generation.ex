@@ -49,6 +49,9 @@ defmodule OpenapiTools.ClientGeneration do
 
     {_stdout, 0} = System.shell(cmd, cd: dir)
 
+    patch_file(dir, :request_builder)
+    patch_file(dir, :deserializer)
+
     Mix.Generator.create_directory(path)
     File.cp_r!(Path.join(dir, "openapi"), path)
     File.rm_rf!(dir)
@@ -76,5 +79,56 @@ defmodule OpenapiTools.ClientGeneration do
     """
     |> EEx.eval_string(assigns: assigns)
     |> String.trim()
+  end
+
+  defp patch_file(dir, file) do
+    path =
+      case Path.wildcard(Path.join(dir, "/**/#{file}.ex")) do
+        [path] -> path
+        any -> raise "could not find #{file} module in generated files: #{inspect(any)}"
+      end
+
+    {_stdout, 0} =
+      System.shell("""
+      patch #{path} << 'EOF'
+      #{diff_text(file)}
+      EOF
+      """)
+  end
+
+  defp diff_text(:request_builder) do
+    """
+    @@ -111,6 +111,15 @@
+         Map.put(request, :headers, headers)
+       end
+
+    +  def add_param(request, :file, name, %Plug.Upload{} = upload) do
+    +    request
+    +    |> Map.put_new_lazy(:body, &Tesla.Multipart.new/0)
+    +    |> Map.update!(
+    +      :body,
+    +      &Tesla.Multipart.add_file(&1, upload.path, name: name, filename: upload.filename, detect_content_type: true)
+    +    )
+    +  end
+    +
+       def add_param(request, :file, name, path) do
+         request
+         |> Map.put_new_lazy(:body, &Tesla.Multipart.new/0)
+    """
+  end
+
+  defp diff_text(:deserializer) do
+    """
+    @@ -43,6 +43,9 @@
+           nil ->
+             nil
+
+    +      value when is_binary(value) ->
+    +        value
+    +
+           value ->
+             to_struct(value, module)
+         end)
+    """
   end
 end
