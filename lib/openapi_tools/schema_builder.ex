@@ -111,6 +111,14 @@ defmodule OpenapiTools.SchemaBuilder do
     %Schema{type: :decimal}
   end
 
+  def schema(:float) do
+    %Schema{type: :number, format: :float}
+  end
+
+  def schema(:number) do
+    %Schema{type: :number}
+  end
+
   def to_parameters(mod, parameter_in \\ :query) do
     props = mod.schema().properties || []
 
