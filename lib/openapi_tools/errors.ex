@@ -46,6 +46,14 @@ defmodule OpenapiTools.Errors do
     Operation.response("Not Found", "application/json", NotFoundError)
   end
 
+  defmodule BadRequestError do
+    OpenApiSpex.schema(error(ErrorDetail))
+  end
+
+  def bad_request do
+    Operation.response("Bad Request", "application/json", BadRequestError)
+  end
+
   defmodule UnprocessableEntityError do
     OpenApiSpex.schema(error(%Schema{type: :object}))
   end
@@ -63,7 +71,7 @@ defmodule OpenapiTools.Errors do
   end
 
   def base_errors do
-    [{402, unauthorized()}, {403, forbidden()}, {500, internal_server_error()}]
+    [{401, unauthorized()}, {403, forbidden()}, {500, internal_server_error()}]
   end
 
   def with_base_errors(list) when is_list(list) do
