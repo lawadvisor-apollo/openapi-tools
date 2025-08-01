@@ -1,4 +1,11 @@
 defmodule OpenapiTools.SchemaBuilder do
+  @moduledoc """
+  Utility functions for building OpenAPI schemas and responses.
+
+  Provides helpers for common schema patterns like timestamps, pagination,
+  and type definitions.
+  """
+
   require OpenApiSpex
   alias OpenApiSpex.Schema
 
@@ -15,8 +22,14 @@ defmodule OpenapiTools.SchemaBuilder do
     }
   }
 
+  @doc """
+  Returns standard timestamp schema fields (inserted_at, updated_at).
+  """
   def timestamps, do: @ts
 
+  @doc """
+  Merges timestamp fields with the given schema map.
+  """
   def with_timestamps(map) do
     Map.merge(@ts, map)
   end
@@ -26,6 +39,9 @@ defmodule OpenapiTools.SchemaBuilder do
     page: %Schema{type: :integer}
   }
 
+  @doc """
+  Merges pagination fields (limit, page) with the given schema map.
+  """
   def with_pagination(map) do
     Map.merge(@pagination, map)
   end
@@ -42,6 +58,9 @@ defmodule OpenapiTools.SchemaBuilder do
     })
   end
 
+  @doc """
+  Creates a paginated response schema with entries and pagination metadata.
+  """
   def paginated_schema(schema) do
     %Schema{
       type: :object,
@@ -55,6 +74,9 @@ defmodule OpenapiTools.SchemaBuilder do
     }
   end
 
+  @doc """
+  Creates a paginated response schema with custom key name and metadata.
+  """
   def paginated_schema2(schema, key) do
     %Schema{
       type: :object,
@@ -65,12 +87,20 @@ defmodule OpenapiTools.SchemaBuilder do
     }
   end
 
+  @doc """
+  Creates a schema of the given type with additional options.
+  """
   def schema(kind, opts) when is_list(opts) do
     kind
     |> schema()
     |> Map.merge(Map.new(opts))
   end
 
+  @doc """
+  Creates a schema for the given primitive type or array.
+
+  Supports: :string, :uuid, :date_time, :map, :binary, :date, :bool, :int, :decimal, :float, :number, {:array, schema}
+  """
   def schema({:array, schema}) do
     %Schema{type: :array, items: schema}
   end
@@ -119,18 +149,27 @@ defmodule OpenapiTools.SchemaBuilder do
     %Schema{type: :number}
   end
 
+  @doc """
+  Converts a module's schema properties to OpenAPI parameter definitions.
+  """
   def to_parameters(mod, parameter_in \\ :query) do
     props = mod.schema().properties || []
 
     Enum.map(props, fn {field, schema} -> {field, [in: parameter_in, schema: schema]} end)
   end
 
+  @doc """
+  Converts a list of responses to a map for OpenAPI specification.
+  """
   def responses(list) when is_list(list) do
     list
     |> List.flatten()
     |> Map.new()
   end
 
+  @doc """
+  Creates a media type tuple for OpenAPI request/response bodies.
+  """
   def mediatype(kind, schema) do
     {List.last(Module.split(schema)), to_mimetype(kind), schema}
   end

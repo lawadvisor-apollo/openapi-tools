@@ -1,10 +1,19 @@
 defmodule OpenapiTools.OpenapiDeserializer do
+  @moduledoc """
+  Deserializes OpenAPI data to structs with configurable decode functions.
+  """
+
   defp decode_default(module) do
     fn struct, value ->
       module.from_openapi(struct, value)
     end
   end
 
+  @doc """
+  Converts a map, list, or value to a struct using a custom or default decode function.
+
+  Accepts an optional `:with` option to specify a custom decode function.
+  """
   def to_struct(map_or_list, module, opts \\ [])
   def to_struct(nil, _, _opts), do: nil
 

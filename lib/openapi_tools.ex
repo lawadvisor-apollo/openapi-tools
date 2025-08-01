@@ -1,18 +1,8 @@
 defmodule OpenapiTools do
   @moduledoc """
-  Documentation for `OpenapiTools`.
+  OpenAPI tools for Elixir applications.
+
+  Provides utilities for generating OpenAPI clients, deserializing API responses,
+  building schemas, and handling common HTTP errors.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> OpenapiTools.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end

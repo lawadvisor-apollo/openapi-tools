@@ -1,5 +1,12 @@
 defmodule OpenapiTools.ClientGeneration do
+  @moduledoc """
+  Generates OpenAPI clients using Docker and openapi-generator-cli.
+  """
+
   defmodule Config do
+    @moduledoc """
+    Configuration for client generation.
+    """
     defstruct [
       :spec,
       :package_name,
@@ -7,17 +14,26 @@ defmodule OpenapiTools.ClientGeneration do
       generator_image: "openapitools/openapi-generator-cli:v7.12.0"
     ]
 
+    @doc """
+    Creates a new Config struct with the given options.
+    """
     def new!(opts) do
       struct!(__MODULE__, opts)
     end
   end
 
+  @doc """
+  Returns the client generation configuration from application environment.
+  """
   def config do
     opts = Application.get_env(:openapi_tools, __MODULE__)
 
     Config.new!(opts)
   end
 
+  @doc """
+  Generates an OpenAPI client using Docker and saves it to the specified path.
+  """
   def generate_client(config, path) do
     {dir_result, 0} = System.shell("mktemp -d")
 

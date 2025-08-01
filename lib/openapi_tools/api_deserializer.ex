@@ -1,4 +1,11 @@
 defmodule OpenapiTools.ApiDeserializer do
+  @moduledoc """
+  Converts maps and lists to structs using module-specific decode functions.
+  """
+
+  @doc """
+  Converts a map, list, or value to a struct using the given module's decode function.
+  """
   def to_struct(map_or_list, module)
   def to_struct(nil, _), do: nil
 

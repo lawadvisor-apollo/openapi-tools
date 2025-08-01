@@ -1,4 +1,8 @@
 defmodule OpenapiTools.RequestBuilder do
+  @moduledoc """
+  Builds paginated API requests with concurrent fetching support.
+  """
+
   defp build_request_opts(state, page) do
     cond do
       is_map(state.params) and state.build_params_mode == :string_map ->
@@ -75,6 +79,12 @@ defmodule OpenapiTools.RequestBuilder do
   #       - does not fail fast if there's an error in the middle
   #         of the requests
   #       - unable to handle requests that doesn't start at page 1
+  @doc """
+  Fetches all pages of a paginated API endpoint concurrently.
+
+  Returns all entries from all pages in a single list. Does not fail fast
+  if there's an error in the middle of requests.
+  """
   def request_all(query_fn, params \\ %{}, opts \\ []) do
     batch_size = Keyword.get(opts, :batch_size, 100)
     first_arg = Keyword.get(opts, :first_arg)
